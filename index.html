@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>ESAN 360 - Trayectoria histórica</title>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+</head>
+<body>
+
+    <a-scene>
+        <a-assets>
+            <img id="esan360" src="gth.jpeg">
+            <video id="videoUni" 
+                   src="video.mp4" 
+                   loop="false" 
+                   crossorigin="anonymous"
+                   playsinline>
+            </video>
+        </a-assets>
+
+        <a-sky src="#esan360" rotation="0 -90 0"></a-sky>
+
+        <a-circle id="pantallaVideo" 
+                  material="src: #videoUni; shader: flat" 
+                  radius="2.9" 
+                  position="0 1.6 -4"
+                  visible="false">
+        </a-circle>
+
+        <a-entity id="contenedorBoton" position="0 1.6 -2.5" visible="true">
+            <a-circle id="btnAccion"
+                      class="clickable"
+                      color="#000000" 
+                      opacity="0.5" 
+                      radius="0.55"> 
+                <a-text id="textoBoton"
+                        value="CONOCE NUESTRA\nHISTORIA" 
+                        align="center" 
+                        color="#FFFFFF" 
+                        font="kelsonsans"
+                        width="1" 
+                        line-height="55"
+                        wrap-count="18"
+                        anchor="center"
+                        baseline="center">
+                </a-text>
+            </a-circle>
+        </a-entity>
+
+        <a-entity camera look-controls position="0 1.6 0">
+            <a-cursor id="cursor" 
+                      color="yellow" 
+                      raycaster="objects: .clickable">
+            </a-cursor>
+        </a-entity>
+
+    </a-scene>
+
+    <script>
+        const video = document.querySelector('#videoUni');
+        const pantalla = document.querySelector('#pantallaVideo');
+        const contenedorBtn = document.querySelector('#contenedorBoton');
+        const btnAccion = document.querySelector('#btnAccion');
+        const textoBoton = document.querySelector('#textoBoton');
+
+        btnAccion.addEventListener('click', function() {
+            video.muted = false;
+            video.currentTime = 0;
+            
+            pantalla.setAttribute('visible', 'true');
+            contenedorBtn.setAttribute('visible', 'false');
+            
+            video.play();
+        });
+
+        video.addEventListener('ended', function() {
+            pantalla.setAttribute('visible', 'false');
+            textoBoton.setAttribute('value', 'VUELVE A VER\nNUESTRA\nHISTORIA');
+            contenedorBtn.setAttribute('visible', 'true');
+        });
+    </script>
+</body>
+</html>
