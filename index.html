@@ -4,6 +4,22 @@
     <meta charset="utf-8">
     <title>ESAN 360 - Trayectoria histórica</title>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script>
+        // Componente para recortar los bordes del video y ocultar marcas de agua
+        AFRAME.registerComponent('crop-video', {
+          init: function () {
+            this.el.addEventListener('materialtextureloaded', () => {
+              const mesh = this.el.getObject3D('mesh');
+              if (mesh.material.map) {
+                // Hacemos un pequeño zoom (1.1) y centramos la textura
+                // Esto empuja los bordes del video hacia afuera del círculo
+                mesh.material.map.repeat.set(0.9, 0.9); // Zoom
+                mesh.material.map.offset.set(0.05, 0.05); // Centrado
+              }
+            });
+          }
+        });
+    </script>
 </head>
 <body>
 
@@ -24,7 +40,8 @@
                   material="src: #videoUni; shader: flat" 
                   radius="2.9" 
                   position="0 1.6 -4"
-                  visible="false">
+                  visible="false"
+                  crop-video>
         </a-circle>
 
         <a-entity id="contenedorBoton" position="0 1.6 -2.5" visible="true">
