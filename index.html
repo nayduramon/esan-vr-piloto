@@ -22,7 +22,7 @@
     <a-sky src="#esan360" rotation="0 -90 0"></a-sky>
  
     <a-sphere id="telonNegro"
-              radius="10"
+              radius="60"
               material="color: #000; side: back; transparent: true; opacity: 0; shader: flat"
               animation__oscurecer="property: material.opacity; to: 1; dur: 3000; startEvents: cineStart; easing: easeInOutQuad"
               animation__aclarar="property: material.opacity; to: 0; dur: 3000; startEvents: cineEnd; easing: easeInOutQuad">
@@ -80,52 +80,52 @@
     const textoBoton = document.querySelector('#textoBoton');
     const telonNegro = document.querySelector('#telonNegro');
  
-    // --- PARTE 1: AL HACER CLIC EN EL BOTÓN ---
+    // Configuración de la animación del botón (para reusarla)
+    const animacionBotonConfig = "property: position; to: 0 1.6 -2.5; dur: 8000; easing: easeOutCubic; delay: 500";
+ 
+    // --- CLIC EN BOTÓN ---
     btnAccion.addEventListener('click', function() {
-      // Ocultar botón
       contenedorBtn.setAttribute('visible', 'false');
- 
-      // Poner todo negro
       telonNegro.emit('cineStart');
- 
-      // Preparar video (aún lejos)
       video.muted = false;
       video.currentTime = 0;
       pantalla.setAttribute('visible', 'true');
-      // Mover video hacia el frente (lento)
       pantalla.emit('videoEntra');
  
-      // Reproducir video mientras se acerca
       setTimeout(() => {
         video.play();
       }, 1000);
     });
  
-    // --- PARTE 2: AL TERMINAR EL VIDEO (AQUÍ ESTÁ LA MAGIA) ---
+    // --- FIN DEL VIDEO (CORREGIDO) ---
     video.addEventListener('ended', function() {
-      // Quitar lo negro
       telonNegro.emit('cineEnd');
- 
-      // Mandar el video lejos otra vez
       pantalla.emit('videoSale');
  
-      // Esperar a que el video se vaya (4 seg) para traer el botón
+      // Esperamos a que el video se aleje
       setTimeout(() => {
         pantalla.setAttribute('visible', 'false');
-        // 1. Cambiar el texto del botón
+        // 1. Cambiar Texto
         textoBoton.setAttribute('value', 'VUELVE A VER\nNUESTRA\nHISTORIA');
-        // 2. Hacer visible el contenedor del botón
+        // 2. Hacer visible el contenedor
         contenedorBtn.setAttribute('visible', 'true');
-        // 3. Reiniciar la posición del botón a "lejos" (-15)
+        // 3. REINICIO ROBUSTO DE LA ANIMACIÓN:
+        // Primero, reseteamos la posición física al fondo
         contenedorBtn.setAttribute('position', '0 1.6 -15');
-        // 4. Reiniciar la animación para que viaje lento hacia ti de nuevo
-        // (Esto fuerza a A-Frame a recalcular la animación de entrada)
-        contenedorBtn.components.animation.animation.restart();
+        // Segundo: Borramos la animación anterior para limpiar la memoria de "completado"
+        contenedorBtn.removeAttribute('animation');
+        // Tercero: Agregamos la animación de nuevo tras un milisegundo
+        // (Esto fuerza a A-Frame a ejecutarla como si fuera nueva)
+        setTimeout(() => {
+            contenedorBtn.setAttribute('animation', animacionBotonConfig);
+        }, 50);
+ 
       }, 4000); 
     });
 </script>
 </body>
 </html>
+
 
 
 
