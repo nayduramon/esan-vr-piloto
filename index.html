@@ -24,24 +24,24 @@
     <a-sphere id="telonNegro"
               radius="10"
               material="color: #000; side: back; transparent: true; opacity: 0; shader: flat"
-              animation__oscurecer="property: material.opacity; to: 0.9; dur: 2000; startEvents: cineStart; easing: easeInOutQuad"
-              animation__aclarar="property: material.opacity; to: 0; dur: 2000; startEvents: cineEnd; easing: easeInOutQuad">
+              animation__oscurecer="property: material.opacity; to: 1; dur: 3000; startEvents: cineStart; easing: easeInOutQuad"
+              animation__aclarar="property: material.opacity; to: 0; dur: 3000; startEvents: cineEnd; easing: easeInOutQuad">
 </a-sphere>
  
     <a-video id="pantallaVideo" 
              src="#videoUni" 
              width="4" 
              height="2.25"
-             position="0 1.6 -20"
+             position="0 1.6 -30"
              visible="false"
-             animation__entrar="property: position; to: 0 1.6 -4; dur: 2000; easing: easeOutBack; startEvents: videoEntra"
-             animation__salir="property: position; to: 0 1.6 -20; dur: 1500; easing: easeInQuad; startEvents: videoSale">
+             animation__entrar="property: position; to: 0 1.6 -4; dur: 8000; easing: easeOutCubic; startEvents: videoEntra"
+             animation__salir="property: position; to: 0 1.6 -30; dur: 4000; easing: easeInQuad; startEvents: videoSale">
 </a-video>
  
     <a-entity id="contenedorBoton" 
-              position="0 1.6 -10" 
+              position="0 1.6 -15" 
               visible="true"
-              animation="property: position; to: 0 1.6 -2.5; dur: 2500; easing: easeOutElastic; elasticity: 400">
+              animation="property: position; to: 0 1.6 -2.5; dur: 8000; easing: easeOutCubic; delay: 500">
 <a-circle id="btnAccion"
                 class="clickable"
                 color="#000000" 
@@ -80,53 +80,53 @@
     const textoBoton = document.querySelector('#textoBoton');
     const telonNegro = document.querySelector('#telonNegro');
  
-    // --- AL HACER CLIC EN EL BOTÓN ---
+    // --- PARTE 1: AL HACER CLIC EN EL BOTÓN ---
     btnAccion.addEventListener('click', function() {
-      // 1. Ocultar el botón
+      // Ocultar botón
       contenedorBtn.setAttribute('visible', 'false');
  
-      // 2. Iniciar Modo Cine (oscurecer fondo)
+      // Poner todo negro
       telonNegro.emit('cineStart');
  
-      // 3. Preparar video y mostrar pantalla (aún lejos)
+      // Preparar video (aún lejos)
       video.muted = false;
       video.currentTime = 0;
       pantalla.setAttribute('visible', 'true');
-      // 4. Animar la entrada del video (de lejos a cerca)
+      // Mover video hacia el frente (lento)
       pantalla.emit('videoEntra');
  
-      // 5. Reproducir
-      // Damos un pequeño delay para que empiece mientras se acerca
+      // Reproducir video mientras se acerca
       setTimeout(() => {
         video.play();
-      }, 800);
+      }, 1000);
     });
  
-    // --- AL TERMINAR EL VIDEO ---
+    // --- PARTE 2: AL TERMINAR EL VIDEO (AQUÍ ESTÁ LA MAGIA) ---
     video.addEventListener('ended', function() {
-      // 1. Quitar Modo Cine
+      // Quitar lo negro
       telonNegro.emit('cineEnd');
  
-      // 2. Alejar la pantalla
+      // Mandar el video lejos otra vez
       pantalla.emit('videoSale');
  
-      // 3. Restaurar botón
+      // Esperar a que el video se vaya (4 seg) para traer el botón
       setTimeout(() => {
         pantalla.setAttribute('visible', 'false');
-        // Cambiar texto
+        // 1. Cambiar el texto del botón
         textoBoton.setAttribute('value', 'VUELVE A VER\nNUESTRA\nHISTORIA');
+        // 2. Hacer visible el contenedor del botón
         contenedorBtn.setAttribute('visible', 'true');
-        // Reiniciar animación de entrada del botón
-        contenedorBtn.setAttribute('position', '0 1.6 -10');
-        // Forzamos un reinicio de la animación si el componente lo permite,
-        // o simplemente al cambiar la posición y tener la animación activa, 
-        // A-Frame intentará interpolar de nuevo.
+        // 3. Reiniciar la posición del botón a "lejos" (-15)
+        contenedorBtn.setAttribute('position', '0 1.6 -15');
+        // 4. Reiniciar la animación para que viaje lento hacia ti de nuevo
+        // (Esto fuerza a A-Frame a recalcular la animación de entrada)
         contenedorBtn.components.animation.animation.restart();
-      }, 1500); 
+      }, 4000); 
     });
 </script>
 </body>
 </html>
+
 
 
 
