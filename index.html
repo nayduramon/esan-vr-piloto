@@ -6,126 +6,140 @@
 <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
 </head>
 <body>
- 
-  <a-scene>
-<a-assets>
-<img id="esan360" src="gth.jpeg">
-<img id="butacas360" src="butacas.jpg">
-<video id="videoUni" 
-             src="video2.mp4" 
-             loop="false" 
-             crossorigin="anonymous"
-             playsinline
-             webkit-playsinline>
-</video>
-</a-assets>
- 
-    <a-sky src="#esan360" rotation="0 -90 0"></a-sky>
-    <a-sky id="skyButacas"
-       src="#butacas360"
-       rotation="0 -90 0"
-       visible="false"
-       animation__mostrar="property: visible; to: true; startEvents: cineStart"
-       animation__ocultar="property: visible; to: false; startEvents: cineEnd">
-</a-sky>
- 
-    <a-video id="pantallaVideo" 
-             src="#videoUni" 
-             width="5" 
-             height="3"
-             position="0 1.6 -30"
-             visible="false"
-             animation__entrar="property: position; to: 0 1.6 -4; dur: 8000; easing: easeOutCubic; startEvents: videoEntra"
-             animation__salir="property: position; to: 0 1.6 -30; dur: 4000; easing: easeInQuad; startEvents: videoSale">
-</a-video>
- 
-    <a-entity id="contenedorBoton" 
-              position="0 1.6 -15" 
-              visible="true"
-              animation="property: position; to: 0 1.6 -2.5; dur: 8000; easing: easeOutCubic; delay: 500">
-<a-circle id="btnAccion"
-                class="clickable"
-                color="#000000" 
-                opacity="0.6" 
-                radius="0.65"
-                animation__mouseenter="property: scale; to: 1.1 1.1 1; dur: 200; startEvents: mouseenter"
-                animation__mouseleave="property: scale; to: 1 1 1; dur: 200; startEvents: mouseleave">
-<a-text id="textoBoton"
-                value="CONOCE NUESTRA\nHISTORIA" 
-                align="center" 
-                color="#FFFFFF" 
-                font="kelsonsans"
-                width="1" 
-                wrap-count="20"
-                anchor="center"
-                baseline="center">
-</a-text>
-</a-circle>
-</a-entity>
- 
-    <a-entity camera look-controls position="0 1.6 0">
-<a-cursor id="cursor"
-          color="#FFD700"
-          radius="0.015"
-          scale="0.3 0.3 0.3"
-          raycaster="objects: .clickable"
-          animation__click="property: scale; startEvents: click; from: 0.2 0.2 0.2; to: 0.3 0.3 0.3; dur: 120">
-</a-cursor>
-</a-entity>
- 
-  </a-scene>
- 
-  <script>
-    const video = document.querySelector('#videoUni');
-    const pantalla = document.querySelector('#pantallaVideo');
-    const contenedorBtn = document.querySelector('#contenedorBoton');
-    const btnAccion = document.querySelector('#btnAccion');
-    const textoBoton = document.querySelector('#textoBoton');
-    const telonNegro = document.querySelector('#telonNegro');
- 
-    // Configuración de la animación del botón (para reusarla)
-    const animacionBotonConfig = "property: position; to: 0 1.6 -2.5; dur: 8000; easing: easeOutCubic; delay: 500";
- 
-    // --- CLIC EN BOTÓN ---
-    btnAccion.addEventListener('click', function() {
-      contenedorBtn.setAttribute('visible', 'false');
-      video.muted = false;
-      video.currentTime = 0;
-      pantalla.setAttribute('visible', 'true');
-      pantalla.emit('videoEntra');
- 
+
+<a-scene>
+
+  <!-- ASSETS -->
+  <a-assets>
+    <img id="esan360" src="gth.jpeg">
+    <img id="butacas360" src="butacas.jpg">
+
+    <video id="videoUni"
+           src="video2.mp4"
+           crossorigin="anonymous"
+           playsinline
+           webkit-playsinline>
+    </video>
+  </a-assets>
+
+  <!-- SKY PRINCIPAL -->
+  <a-sky id="skyPrincipal" src="#esan360" rotation="0 -90 0"></a-sky>
+
+  <!-- SKY BUTACAS -->
+  <a-sky id="skyButacas"
+         src="#butacas360"
+         rotation="0 -90 0"
+         visible="false">
+  </a-sky>
+
+  <!-- VIDEO -->
+  <a-video id="pantallaVideo"
+           src="#videoUni"
+           width="5"
+           height="3"
+           position="0 1.6 -30"
+           visible="false"
+           animation__entrar="property: position; to: 0 1.6 -4; dur: 8000; easing: easeOutCubic; startEvents: videoEntra"
+           animation__salir="property: position; to: 0 1.6 -30; dur: 4000; easing: easeInQuad; startEvents: videoSale">
+  </a-video>
+
+  <!-- BOTÓN -->
+  <a-entity id="contenedorBoton"
+            position="0 1.6 -15"
+            visible="true"
+            animation="property: position; to: 0 1.6 -2.5; dur: 8000; easing: easeOutCubic; delay: 500">
+
+    <a-circle id="btnAccion"
+              class="clickable"
+              color="#000000"
+              opacity="0.6"
+              radius="0.65">
+
+      <a-text id="textoBoton"
+              value="CONOCE NUESTRA\nHISTORIA"
+              align="center"
+              color="#FFFFFF"
+              width="1"
+              anchor="center"
+              baseline="center">
+      </a-text>
+
+    </a-circle>
+  </a-entity>
+
+  <!-- CÁMARA -->
+  <a-entity camera look-controls position="0 1.6 0">
+    <a-cursor
+      color="#FFD700"
+      radius="0.015"
+      scale="0.3 0.3 0.3"
+      raycaster="objects: .clickable">
+    </a-cursor>
+  </a-entity>
+
+</a-scene>
+
+<script>
+  const video = document.querySelector('#videoUni');
+  const pantalla = document.querySelector('#pantallaVideo');
+  const contenedorBtn = document.querySelector('#contenedorBoton');
+  const btnAccion = document.querySelector('#btnAccion');
+  const textoBoton = document.querySelector('#textoBoton');
+
+  const skyPrincipal = document.querySelector('#skyPrincipal');
+  const skyButacas = document.querySelector('#skyButacas');
+
+  const animacionBotonConfig =
+    "property: position; to: 0 1.6 -2.5; dur: 8000; easing: easeOutCubic; delay: 500";
+
+  // CLICK BOTÓN
+  btnAccion.addEventListener('click', () => {
+
+    contenedorBtn.setAttribute('visible', 'false');
+
+    // CAMBIO DE ENTORNO
+    skyPrincipal.setAttribute('visible', 'false');
+    skyButacas.setAttribute('visible', 'true');
+
+    video.currentTime = 0;
+    pantalla.setAttribute('visible', 'true');
+    pantalla.emit('videoEntra');
+
+    setTimeout(() => {
+      video.play();
+    }, 1000);
+  });
+
+  // FIN VIDEO
+  video.addEventListener('ended', () => {
+
+    pantalla.emit('videoSale');
+
+    setTimeout(() => {
+
+      pantalla.setAttribute('visible', 'false');
+
+      // REGRESO AL ENTORNO PRINCIPAL
+      skyButacas.setAttribute('visible', 'false');
+      skyPrincipal.setAttribute('visible', 'true');
+
+      textoBoton.setAttribute('value', 'VUELVE A VER\nNUESTRA\nHISTORIA');
+
+      contenedorBtn.setAttribute('visible', 'true');
+      contenedorBtn.setAttribute('position', '0 1.6 -15');
+      contenedorBtn.removeAttribute('animation');
+
       setTimeout(() => {
-        video.play();
-      }, 1000);
-    });
- 
-    // --- FIN DEL VIDEO (CORREGIDO) ---
-    video.addEventListener('ended', function() {
-      pantalla.emit('videoSale');
- 
-      // Esperamos a que el video se aleje
-      setTimeout(() => {
-        pantalla.setAttribute('visible', 'false');
-        // 1. Cambiar Texto
-        textoBoton.setAttribute('value', 'VUELVE A VER\nNUESTRA\nHISTORIA');
-        // 2. Hacer visible el contenedor
-        contenedorBtn.setAttribute('visible', 'true');
-        // 3. REINICIO ROBUSTO DE LA ANIMACIÓN:
-        // Primero, reseteamos la posición física al fondo
-        contenedorBtn.setAttribute('position', '0 1.6 -15');
-        // Segundo: Borramos la animación anterior para limpiar la memoria de "completado"
-        contenedorBtn.removeAttribute('animation');
-        // Tercero: Agregamos la animación de nuevo tras un milisegundo
-        // (Esto fuerza a A-Frame a ejecutarla como si fuera nueva)
-        setTimeout(() => {
-            contenedorBtn.setAttribute('animation', animacionBotonConfig);
-        }, 50);
- 
-      }, 4000); 
-    });
+        contenedorBtn.setAttribute('animation', animacionBotonConfig);
+      }, 50);
+
+    }, 4000);
+  });
 </script>
+
 </body>
 </html>
+
 
 
 
