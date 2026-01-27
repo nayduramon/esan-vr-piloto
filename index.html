@@ -10,6 +10,7 @@
   <a-scene>
 <a-assets>
 <img id="esan360" src="gth.jpeg">
+<img id="butacas360" src="butacas.jpg">
 <video id="videoUni" 
              src="video2.mp4" 
              loop="false" 
@@ -20,13 +21,13 @@
 </a-assets>
  
     <a-sky src="#esan360" rotation="0 -90 0"></a-sky>
- 
-    <a-sphere id="telonNegro"
-              radius="60"
-              material="color: #000; side: back; transparent: true; opacity: 0; shader: flat"
-              animation__oscurecer="property: material.opacity; to: 1; dur: 3000; startEvents: cineStart; easing: easeInOutQuad"
-              animation__aclarar="property: material.opacity; to: 0; dur: 3000; startEvents: cineEnd; easing: easeInOutQuad">
-</a-sphere>
+    <a-sky id="skyButacas"
+       src="#butacas360"
+       rotation="0 -90 0"
+       visible="false"
+       animation__mostrar="property: visible; to: true; startEvents: cineStart"
+       animation__ocultar="property: visible; to: false; startEvents: cineEnd">
+</a-sky>
  
     <a-video id="pantallaVideo" 
              src="#videoUni" 
@@ -88,7 +89,6 @@
     // --- CLIC EN BOTÓN ---
     btnAccion.addEventListener('click', function() {
       contenedorBtn.setAttribute('visible', 'false');
-      telonNegro.emit('cineStart');
       video.muted = false;
       video.currentTime = 0;
       pantalla.setAttribute('visible', 'true');
@@ -101,7 +101,6 @@
  
     // --- FIN DEL VIDEO (CORREGIDO) ---
     video.addEventListener('ended', function() {
-      telonNegro.emit('cineEnd');
       pantalla.emit('videoSale');
  
       // Esperamos a que el video se aleje
@@ -127,6 +126,7 @@
 </script>
 </body>
 </html>
+
 
 
 
