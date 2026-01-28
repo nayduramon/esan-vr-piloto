@@ -16,22 +16,20 @@
   <a-assets>
     <img id="imgLobby" src="gth.jpeg">
     <img id="imgAuditorio" src="butacas.jpg">
-    <video id="videoUni" src="video3.mp4" crossorigin="anonymous"
-           playsinline webkit-playsinline></video>
+    <video id="videoUni" src="video3.mp4" crossorigin="anonymous" playsinline webkit-playsinline></video>
   </a-assets>
 
   <!-- ENTORNOS -->
   <a-sky id="skyPrincipal" src="#imgLobby" radius="40" rotation="0 -90 0"></a-sky>
   <a-sky id="skyButacas" src="#imgAuditorio" radius="40" rotation="0 -90 0" visible="false"></a-sky>
 
-  <!-- CAPA OSCURECER BUTACAS (CLAVE) -->
+  <!-- CAPA OSCURECER BUTACAS -->
   <a-entity id="oscurecerButacas"
             geometry="primitive: sphere; radius: 39"
-            material="color: black; side: back; transparent: true; opacity: 0"
-            visible="false">
+            material="shader: flat; color: black; side: back; transparent: true; opacity: 0">
   </a-entity>
 
-  <!-- VIDEO (SIEMPRE CLARO) -->
+  <!-- VIDEO (CLARO) -->
   <a-video id="pantallaVideo"
            src="#videoUni"
            width="30"
@@ -40,29 +38,33 @@
            look-at="[camera]"
            visible="false"
            material="shader: flat; toneMapped: false"
-           animation__entrar="property: scale; from: 0 0 0; to: 1 1 1;
-                              dur: 2000; easing: easeOutQuad; startEvents: videoEntra">
+           animation__entrar="property: scale; from: 0 0 0; to: 1 1 1; dur: 3000; easing: easeOutQuad; startEvents: videoEntra">
   </a-video>
 
   <!-- BOTÓN -->
-  <a-entity id="contenedorBoton" position="0 1.6 -15">
+  <a-entity id="contenedorBoton"
+            position="0 1.6 -15"
+            animation="property: position; to: 0 1.6 -2.5; dur: 8000; easing: easeOutCubic; delay: 500">
+
     <a-circle id="btnAccion"
               class="clickable"
-              radius="0.7"
               color="#000"
-              opacity="0.7">
+              opacity="0.7"
+              radius="0.7">
+
       <a-text value="CONOCE NUESTRA\nHISTORIA"
               align="center"
-              color="#FFF"
+              color="#FFFFFF"
               width="1"
               wrap-count="20">
       </a-text>
+
     </a-circle>
   </a-entity>
 
   <!-- CÁMARA -->
   <a-entity camera look-controls position="0 1.6 0">
-    <a-entity cursor="rayOrigin: mouse"
+    <a-entity cursor="fuse: false; rayOrigin: mouse"
               raycaster="objects: .clickable"></a-entity>
   </a-entity>
 
@@ -72,54 +74,52 @@
 
 const video = document.querySelector('#videoUni');
 const pantalla = document.querySelector('#pantallaVideo');
-const btnAccion = document.querySelector('#btnAccion');
 const contenedorBtn = document.querySelector('#contenedorBoton');
+const btnAccion = document.querySelector('#btnAccion');
 const skyPrincipal = document.querySelector('#skyPrincipal');
 const skyButacas = document.querySelector('#skyButacas');
-const oscurecer = document.querySelector('#oscurecerButacas');
+const oscurecerButacas = document.querySelector('#oscurecerButacas');
 
+// CLICK BOTÓN
 btnAccion.addEventListener('click', () => {
 
-  contenedorBtn.setAttribute('visible', false);
+  contenedorBtn.setAttribute('visible', 'false');
 
-  skyPrincipal.setAttribute('visible', false);
-  skyButacas.setAttribute('visible', true);
+  skyPrincipal.setAttribute('visible', 'false');
+  skyButacas.setAttribute('visible', 'true');
 
-  // 🔥 ACTIVAR OSCURECIMIENTO (ESTO FALTABA)
-  oscurecer.setAttribute('visible', true);
-  oscurecer.setAttribute('material', 'opacity', 0);
+  // Oscurecer BUTACAS suavemente (NO el video)
+  oscurecerButacas.setAttribute('animation',
+    'property: material.opacity; from: 0; to: 0.35; dur: 1500; easing: easeOutQuad');
 
-  oscurecer.setAttribute('animation',
-    'property: material.opacity; from: 0; to: 0.45; dur: 1200; easing: easeOutQuad');
-
-  pantalla.setAttribute('visible', true);
+  pantalla.setAttribute('visible', 'true');
 
   setTimeout(() => {
     pantalla.emit('videoEntra');
     video.currentTime = 0;
     video.play();
-  }, 300);
+  }, 500);
 });
 
+// FIN VIDEO
 video.addEventListener('ended', () => {
 
-  pantalla.setAttribute('visible', false);
+  pantalla.setAttribute('visible', 'false');
 
-  oscurecer.setAttribute('animation',
-    'property: material.opacity; from: 0.45; to: 0; dur: 1000; easing: easeOutQuad');
+  oscurecerButacas.setAttribute('animation',
+    'property: material.opacity; from: 0.35; to: 0; dur: 1500; easing: easeOutQuad');
 
-  setTimeout(() => {
-    oscurecer.setAttribute('visible', false);
-    skyButacas.setAttribute('visible', false);
-    skyPrincipal.setAttribute('visible', true);
-    contenedorBtn.setAttribute('visible', true);
-  }, 1000);
+  skyButacas.setAttribute('visible', 'false');
+  skyPrincipal.setAttribute('visible', 'true');
+
+  contenedorBtn.setAttribute('visible', 'true');
 });
 
 </script>
 
 </body>
 </html>
+
 
 
 
