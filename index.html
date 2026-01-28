@@ -6,8 +6,8 @@
 
 <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
 <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
-
 </head>
+
 <body>
 
 <a-scene>
@@ -23,7 +23,14 @@
   <a-sky id="skyPrincipal" src="#imgLobby" radius="40" rotation="0 -90 0"></a-sky>
   <a-sky id="skyButacas" src="#imgAuditorio" radius="40" rotation="0 -90 0" visible="false"></a-sky>
 
-  <!-- VIDEO -->
+  <!-- CAPA PARA OSCURECER SOLO LAS BUTACAS -->
+  <a-entity id="oscurecerButacas"
+            geometry="primitive: sphere; radius: 39"
+            material="shader: flat; color: black; side: back; transparent: true; opacity: 0"
+            visible="false">
+  </a-entity>
+
+  <!-- VIDEO (SIEMPRE CLARO) -->
   <a-video id="pantallaVideo"
            src="#videoUni"
            width="30"
@@ -31,7 +38,7 @@
            position="-27.5 2.5 -11.7"
            look-at="[camera]"
            visible="false"
-           material="shader: flat; toneMapped: false"
+           material="shader: flat"
            animation__entrar="property: scale; from: 0 0 0; to: 1 1 1; dur: 3000; easing: easeOutQuad; startEvents: videoEntra">
   </a-video>
 
@@ -65,38 +72,15 @@
   <a-entity id="rig">
 
     <a-entity camera look-controls position="0 1.6 0">
-
-      <!-- FADER GLOBAL -->
-      <a-sphere id="fader"
-                radius="0.1"
-                material="shader: flat; color: black; side: double; transparent: true; opacity: 0; depthTest: false"
-                visible="false"
-                animation__fadeOut="property: material.opacity; from: 0; to: 1; dur: 2000; startEvents: startFadeOut"
-                animation__fadeIn="property: material.opacity; from: 1; to: 0; dur: 6000; easing: easeInOutSine; startEvents: startFadeIn">
-      </a-sphere>
-
-      <!-- LUCES DEL AUDITORIO -->
-      <a-sphere id="lucesAuditorio"
-                radius="0.15"
-                material="shader: flat; color: black; side: double; transparent: true; opacity: 0"
-                visible="false"
-                depthTest="false"
-                animation__apagar="property: material.opacity; from: 0; to: 0.85; dur: 3000; easing: easeInOutSine; startEvents: apagarLuces"
-                animation__prender="property: material.opacity; from: 0.75; to: 0; dur: 4000; easing: easeInOutSine; startEvents: prenderLuces">
-      </a-sphere>
-
       <a-entity cursor="fuse: false; rayOrigin: mouse"
                 raycaster="objects: .clickable"></a-entity>
-
     </a-entity>
 
     <a-entity laser-controls="hand: right"
-              raycaster="objects: .clickable; far: 50"
-              line="color: red; opacity: 0.75"></a-entity>
+              raycaster="objects: .clickable; far: 50"></a-entity>
 
     <a-entity laser-controls="hand: left"
-              raycaster="objects: .clickable; far: 50"
-              line="color: red; opacity: 0.75"></a-entity>
+              raycaster="objects: .clickable; far: 50"></a-entity>
 
   </a-entity>
 
@@ -109,86 +93,54 @@ const pantalla = document.querySelector('#pantallaVideo');
 const contenedorBtn = document.querySelector('#contenedorBoton');
 const btnAccion = document.querySelector('#btnAccion');
 const textoBoton = document.querySelector('#textoBoton');
-const fader = document.querySelector('#fader');
 const skyPrincipal = document.querySelector('#skyPrincipal');
 const skyButacas = document.querySelector('#skyButacas');
-const lucesAuditorio = document.querySelector('#lucesAuditorio');
+const oscurecerButacas = document.querySelector('#oscurecerButacas');
 
-const animacionEntrada = "property: position; to: 0 1.6 -2.5; dur: 8000; easing: easeOutCubic; delay: 500";
+const animacionEntrada =
+  "property: position; to: 0 1.6 -2.5; dur: 8000; easing: easeOutCubic; delay: 500";
 
+// CLICK BOTÓN
 btnAccion.addEventListener('click', () => {
 
   contenedorBtn.setAttribute('visible', 'false');
 
-  fader.setAttribute('visible', 'true');
-  fader.emit('startFadeOut');
+  skyPrincipal.setAttribute('visible', 'false');
+  skyButacas.setAttribute('visible', 'true');
+
+  // APAGAR LUCES DEL AUDITORIO
+  oscurecerButacas.setAttribute('visible', 'true');
+  oscurecerButacas.setAttribute('material', 'opacity: 0.85');
+
+  video.currentTime = 0;
+  pantalla.setAttribute('visible', 'true');
 
   setTimeout(() => {
-
-    skyPrincipal.setAttribute('visible', 'false');
-    skyButacas.setAttribute('visible', 'true');
-
-    video.currentTime = 0;
-    pantalla.setAttribute('visible', 'true');
-
-    fader.emit('startFadeIn');
-
-    setTimeout(() => {
-      pantalla.emit('videoEntra');
-      video.play();
-
-      // APAGAR LUCES DEL AUDITORIO
-      lucesAuditorio.setAttribute('visible', 'true');
-      lucesAuditorio.emit('apagarLuces');
-
-      setTimeout(() => {
-        fader.setAttribute('visible', 'false');
-      }, 6100);
-
-    }, 1000);
-
-  }, 2000);
-});
-
-// PRENDER LUCES ANTES DE TERMINAR
-video.addEventListener('timeupdate', () => {
-  if (video.duration && video.currentTime > video.duration - 5) {
-    lucesAuditorio.emit('prenderLuces');
-  }
+    pantalla.emit('videoEntra');
+    video.play();
+  }, 500);
 });
 
 // FIN DEL VIDEO
 video.addEventListener('ended', () => {
 
-  fader.setAttribute('visible', 'true');
-  fader.emit('startFadeOut');
+  pantalla.setAttribute('visible', 'false');
+  skyButacas.setAttribute('visible', 'false');
+  skyPrincipal.setAttribute('visible', 'true');
+
+  // PRENDER LUCES
+  oscurecerButacas.setAttribute('material', 'opacity: 0');
+  oscurecerButacas.setAttribute('visible', 'false');
+
+  textoBoton.setAttribute('value', 'VUELVE A VER\nNUESTRA\nHISTORIA');
+
+  contenedorBtn.setAttribute('visible', 'true');
+  contenedorBtn.setAttribute('position', '0 1.6 -15');
+  contenedorBtn.removeAttribute('animation');
 
   setTimeout(() => {
-
-    pantalla.setAttribute('visible', 'false');
-    skyButacas.setAttribute('visible', 'false');
-    skyPrincipal.setAttribute('visible', 'true');
-
-    lucesAuditorio.setAttribute('visible', 'false');
-    lucesAuditorio.setAttribute('material', 'opacity: 0');
-
-    textoBoton.setAttribute('value', 'VUELVE A VER\nNUESTRA\nHISTORIA');
-
-    contenedorBtn.setAttribute('visible', 'true');
-    contenedorBtn.setAttribute('position', '0 1.6 -15');
-    contenedorBtn.removeAttribute('animation');
-
-    fader.emit('startFadeIn');
-
-    setTimeout(() => {
-      contenedorBtn.setAttribute('animation', animacionEntrada);
-    }, 50);
-
-    setTimeout(() => {
-      fader.setAttribute('visible', 'false');
-    }, 6100);
-
-  }, 2000);
+    contenedorBtn.setAttribute('animation', animacionEntrada);
+  }, 50);
 });
 
 </script>
