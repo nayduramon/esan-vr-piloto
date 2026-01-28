@@ -23,13 +23,14 @@
   <a-sky id="skyPrincipal" src="#imgLobby" radius="40" rotation="0 -90 0"></a-sky>
   <a-sky id="skyButacas" src="#imgAuditorio" radius="40" rotation="0 -90 0" visible="false"></a-sky>
 
-  <!-- CAPA OSCURECER BUTACAS -->
+  <!-- CAPA PARA OSCURECER SOLO LAS BUTACAS -->
   <a-entity id="oscurecerButacas"
             geometry="primitive: sphere; radius: 39"
-            material="shader: flat; color: black; side: back; transparent: true; opacity: 8">
+            material="shader: flat; color: black; side: back; transparent: true; opacity: 0"
+            visible="false">
   </a-entity>
 
-  <!-- VIDEO (CLARO) -->
+  <!-- VIDEO (SIEMPRE CLARO) -->
   <a-video id="pantallaVideo"
            src="#videoUni"
            width="30"
@@ -37,7 +38,7 @@
            position="-27.5 2.5 -11.7"
            look-at="[camera]"
            visible="false"
-           material="shader: flat; toneMapped: false"
+           material="shader: flat"
            animation__entrar="property: scale; from: 0 0 0; to: 1 1 1; dur: 3000; easing: easeOutQuad; startEvents: videoEntra">
   </a-video>
 
@@ -50,9 +51,12 @@
               class="clickable"
               color="#000"
               opacity="0.7"
-              radius="0.7">
+              radius="0.7"
+              animation__hover="property: scale; to: 1.2 1.2 1; dur: 200; startEvents: mouseenter"
+              animation__leave="property: scale; to: 1 1 1; dur: 200; startEvents: mouseleave">
 
-      <a-text value="CONOCE NUESTRA\nHISTORIA"
+      <a-text id="textoBoton"
+              value="CONOCE NUESTRA\nHISTORIA"
               align="center"
               color="#FFFFFF"
               width="1"
@@ -65,9 +69,19 @@
   </a-entity>
 
   <!-- CÁMARA -->
-  <a-entity camera look-controls position="0 1.6 0">
-    <a-entity cursor="fuse: false; rayOrigin: mouse"
-              raycaster="objects: .clickable"></a-entity>
+  <a-entity id="rig">
+
+    <a-entity camera look-controls position="0 1.6 0">
+      <a-entity cursor="fuse: false; rayOrigin: mouse"
+                raycaster="objects: .clickable"></a-entity>
+    </a-entity>
+
+    <a-entity laser-controls="hand: right"
+              raycaster="objects: .clickable; far: 50"></a-entity>
+
+    <a-entity laser-controls="hand: left"
+              raycaster="objects: .clickable; far: 50"></a-entity>
+
   </a-entity>
 
 </a-scene>
@@ -78,9 +92,13 @@ const video = document.querySelector('#videoUni');
 const pantalla = document.querySelector('#pantallaVideo');
 const contenedorBtn = document.querySelector('#contenedorBoton');
 const btnAccion = document.querySelector('#btnAccion');
+const textoBoton = document.querySelector('#textoBoton');
 const skyPrincipal = document.querySelector('#skyPrincipal');
 const skyButacas = document.querySelector('#skyButacas');
 const oscurecerButacas = document.querySelector('#oscurecerButacas');
+
+const animacionEntrada =
+  "property: position; to: 0 1.6 -2.5; dur: 8000; easing: easeOutCubic; delay: 500";
 
 // CLICK BOTÓN
 btnAccion.addEventListener('click', () => {
@@ -90,37 +108,47 @@ btnAccion.addEventListener('click', () => {
   skyPrincipal.setAttribute('visible', 'false');
   skyButacas.setAttribute('visible', 'true');
 
-  // Oscurecer BUTACAS suavemente (NO el video)
-  oscurecerButacas.setAttribute('animation',
-    'property: material.opacity; from: 0; to: 0.35; dur: 1500; easing: easeOutQuad');
+  // APAGAR LUCES DEL AUDITORIO
+  oscurecerButacas.setAttribute('visible', 'true');
+  oscurecerButacas.setAttribute('material', 'opacity: 0.85');
 
+  video.currentTime = 0;
   pantalla.setAttribute('visible', 'true');
 
   setTimeout(() => {
     pantalla.emit('videoEntra');
-    video.currentTime = 0;
     video.play();
   }, 500);
 });
 
-// FIN VIDEO
+// FIN DEL VIDEO
 video.addEventListener('ended', () => {
 
   pantalla.setAttribute('visible', 'false');
-
-  oscurecerButacas.setAttribute('animation',
-    'property: material.opacity; from: 0.35; to: 0; dur: 1500; easing: easeOutQuad');
-
   skyButacas.setAttribute('visible', 'false');
   skyPrincipal.setAttribute('visible', 'true');
 
+  // PRENDER LUCES
+  oscurecerButacas.setAttribute('material', 'opacity: 0');
+  oscurecerButacas.setAttribute('visible', 'false');
+
+  textoBoton.setAttribute('value', 'VUELVE A VER\nNUESTRA\nHISTORIA');
+
   contenedorBtn.setAttribute('visible', 'true');
+  contenedorBtn.setAttribute('position', '0 1.6 -15');
+  contenedorBtn.removeAttribute('animation');
+
+  setTimeout(() => {
+    contenedorBtn.setAttribute('animation', animacionEntrada);
+  }, 50);
 });
 
 </script>
 
 </body>
 </html>
+
+
 
 
 
