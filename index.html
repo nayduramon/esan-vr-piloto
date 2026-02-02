@@ -21,71 +21,60 @@
   </a-assets>
 
   <!-- ENTORNOS -->
-  <a-sky id="skyPrincipal"
-         src="#imgLobby"
-         radius="40"
-         rotation="0 -90 0"
-         class="detectable">
-  </a-sky>
+  <a-sky id="skyPrincipal" src="#imgLobby" radius="40" rotation="0 -90 0"></a-sky>
+  <a-sky id="skyButacas" src="#imgAuditorio" radius="40" rotation="0 -90 0" visible="false"></a-sky>
 
-  <a-sky id="skyButacas"
-         src="#imgAuditorio"
-         radius="40"
-         rotation="0 -90 0"
-         visible="false">
-  </a-sky>
-
-  <!-- 🔴 PIN DE UBICACIÓN -->
+  <!-- 📍 PIN DEL PINO -->
   <a-entity id="pinPino"
             class="clickable"
-            geometry="primitive: cone; radiusBottom: 0.25; radiusTop: 0.05; height: 0.8"
-            material="color: red"
-            position="-35.3 16.5 -5.0"
+            position="-35.3 18.0 -5.0"
             look-at="[camera]">
+
+    <a-circle radius="0.6"
+              color="#BD0000"
+              material="shader: flat">
+    </a-circle>
+
+    <a-cone height="0.8"
+            radius-bottom="0.25"
+            radius-top="0"
+            color="#BD0000"
+            position="0 -0.7 0"
+            material="shader: flat">
+    </a-cone>
   </a-entity>
 
-  <!-- ☁️ NUBE CON TEXTO (OCULTA) -->
+  <!-- ☁️ NUBE DE TEXTO (CLARA Y NÍTIDA) -->
   <a-entity id="nubePino"
-            position="-35.3 18.0 -5.0"
+            position="-35.3 21.0 -5.0"
             visible="false"
             look-at="[camera]">
 
-    <a-plane width="8"
-             height="4"
-             color="#FFFFFF"
-             material="shader: flat; opacity: 0.9"
-             position="0 0 0">
+    <a-plane width="10"
+             height="5"
+             material="shader: flat; color: #FFFFFF; transparent: true; opacity: 0.95">
     </a-plane>
 
     <a-text
       value="El pino simboliza el vínculo de ESAN\ncon la Universidad de Stanford,\ncuyo emblema lleva un pino\ncomo elemento central."
       color="#000000"
+      width="9"
+      wrap-count="50"
       align="center"
-      width="7"
-      position="0 0 0.01">
+      position="0 0 0.02"
+      font="https://cdn.aframe.io/fonts/mozillavr.fnt">
     </a-text>
 
   </a-entity>
 
-  <!-- TEXTO HISTORIA (NO SE TOCA) -->
-  <a-text
-    id="textoHistoria"
-    value="En esta etapa se consolidan los\nprimeros programas académicos."
-    position="-26.7 8.0 -28.6"
-    color="#7BF502"
-    width="20"
-    align="center"
-    look-at="[camera]">
-  </a-text>
-
-  <!-- CAPA OSCURECER BUTACAS -->
+  <!-- CAPA PARA OSCURECER SOLO LAS BUTACAS -->
   <a-entity id="oscurecerButacas"
             geometry="primitive: sphere; radius: 39"
             material="shader: flat; color: black; side: back; transparent: true; opacity: 0"
             visible="false">
   </a-entity>
 
-  <!-- VIDEO -->
+  <!-- VIDEO (SIEMPRE CLARO) -->
   <a-video id="pantallaVideo"
            src="#videoUni"
            width="30"
@@ -93,24 +82,33 @@
            position="-27.5 2.5 -11.7"
            look-at="[camera]"
            visible="false"
-           material="shader: flat; toneMapped: false">
+           material="shader: flat"
+           animation__entrar="property: scale; from: 0 0 0; to: 1 1 1;
+                              dur: 3000; easing: easeOutQuad; startEvents: videoEntra">
   </a-video>
 
   <!-- BOTÓN -->
   <a-entity id="contenedorBoton"
-            position="0 1.6 -15">
+            position="0 1.6 -15"
+            animation="property: position; to: 0 1.6 -2.5;
+                       dur: 8000; easing: easeOutCubic; delay: 500">
 
     <a-circle id="btnAccion"
               class="clickable"
               color="#000"
               opacity="0.7"
-              radius="0.7">
+              radius="0.7"
+              animation__hover="property: scale; to: 1.2 1.2 1; dur: 200; startEvents: mouseenter"
+              animation__leave="property: scale; to: 1 1 1; dur: 200; startEvents: mouseleave">
 
-      <a-text
-        value="CONOCE\nNUESTRA\nHISTORIA"
-        align="center"
-        color="#FFFFFF"
-        width="1">
+      <a-text id="textoBoton"
+              value="CONOCE NUESTRA\nHISTORIA"
+              align="center"
+              color="#FFFFFF"
+              width="1"
+              wrap-count="20"
+              anchor="center"
+              baseline="center">
       </a-text>
 
     </a-circle>
@@ -118,40 +116,95 @@
 
   <!-- CÁMARA -->
   <a-entity id="rig">
+
     <a-entity camera look-controls position="0 1.6 0">
-      <a-entity cursor="rayOrigin: mouse"
-                raycaster="objects: .clickable, .detectable">
+      <a-entity cursor="fuse: false; rayOrigin: mouse"
+                raycaster="objects: .clickable">
       </a-entity>
     </a-entity>
 
     <a-entity laser-controls="hand: right"
-              raycaster="objects: .clickable, .detectable">
+              raycaster="objects: .clickable; far: 50">
     </a-entity>
 
     <a-entity laser-controls="hand: left"
-              raycaster="objects: .clickable, .detectable">
+              raycaster="objects: .clickable; far: 50">
     </a-entity>
+
   </a-entity>
 
 </a-scene>
 
 <script>
 
+const video = document.querySelector('#videoUni');
+const pantalla = document.querySelector('#pantallaVideo');
+const contenedorBtn = document.querySelector('#contenedorBoton');
+const btnAccion = document.querySelector('#btnAccion');
+const textoBoton = document.querySelector('#textoBoton');
+const skyPrincipal = document.querySelector('#skyPrincipal');
+const skyButacas = document.querySelector('#skyButacas');
+const oscurecerButacas = document.querySelector('#oscurecerButacas');
+
 const pinPino = document.querySelector('#pinPino');
 const nubePino = document.querySelector('#nubePino');
 
-// 👉 CLICK PIN → MOSTRAR / OCULTAR TEXTO
+const animacionEntrada =
+  "property: position; to: 0 1.6 -2.5; dur: 8000; easing: easeOutCubic; delay: 500";
+
+// 📍 MOSTRAR / OCULTAR TEXTO DEL PIN
 pinPino.addEventListener('click', () => {
-  const visible = nubePino.getAttribute('visible');
-  nubePino.setAttribute('visible', !visible);
+  nubePino.setAttribute(
+    'visible',
+    !nubePino.getAttribute('visible')
+  );
+});
+
+// CLICK BOTÓN VIDEO
+btnAccion.addEventListener('click', () => {
+
+  contenedorBtn.setAttribute('visible', 'false');
+
+  skyPrincipal.setAttribute('visible', 'false');
+  skyButacas.setAttribute('visible', 'true');
+
+  oscurecerButacas.setAttribute('visible', 'true');
+  oscurecerButacas.setAttribute('material', 'opacity: 0.85');
+
+  video.currentTime = 0;
+  pantalla.setAttribute('visible', 'true');
+
+  setTimeout(() => {
+    pantalla.emit('videoEntra');
+    video.play();
+  }, 500);
+});
+
+// FIN DEL VIDEO
+video.addEventListener('ended', () => {
+
+  pantalla.setAttribute('visible', 'false');
+  skyButacas.setAttribute('visible', 'false');
+  skyPrincipal.setAttribute('visible', 'true');
+
+  oscurecerButacas.setAttribute('material', 'opacity: 0');
+  oscurecerButacas.setAttribute('visible', 'false');
+
+  textoBoton.setAttribute('value', 'VUELVE A VER\nNUESTRA\nHISTORIA');
+
+  contenedorBtn.setAttribute('visible', 'true');
+  contenedorBtn.setAttribute('position', '0 1.6 -15');
+  contenedorBtn.removeAttribute('animation');
+
+  setTimeout(() => {
+    contenedorBtn.setAttribute('animation', animacionEntrada);
+  }, 50);
 });
 
 </script>
 
 </body>
 </html>
-
-
 
 
 
