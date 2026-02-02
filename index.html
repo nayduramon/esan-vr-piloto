@@ -1,41 +1,155 @@
-<!-- PIN DE UBICACIÓN + NUBE DE TEXTO -->
-<a-entity id="puntoPino" position="-35.3 16.5 -5.0">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>ESAN - Trayectoria histórica</title>
 
-  <!-- PIN -->
-  <a-sphere
-    id="iconoPino"
-    class="clickable"
-    radius="0.35"
-    color="#E10600">
-  </a-sphere>
+<script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+<script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
+</head>
 
-  <!-- NUBE -->
-  <a-plane
-    id="nubePino"
-    width="8"
-    height="4"
-    color="#FFFFFF"
-    position="0 2 0"
-    visible="false"
-    look-at="[camera]"
-    material="shader: flat; opacity: 0.95">
+<body>
+
+<a-scene>
+
+  <!-- ASSETS -->
+  <a-assets>
+    <img id="imgLobby" src="gth.jpeg">
+    <img id="imgAuditorio" src="butacas.jpg">
+    <video id="videoUni" src="video3.mp4" crossorigin="anonymous"
+           playsinline webkit-playsinline></video>
+  </a-assets>
+
+  <!-- ENTORNOS -->
+  <a-sky id="skyPrincipal"
+         src="#imgLobby"
+         radius="40"
+         rotation="0 -90 0"
+         class="detectable">
+  </a-sky>
+
+  <a-sky id="skyButacas"
+         src="#imgAuditorio"
+         radius="40"
+         rotation="0 -90 0"
+         visible="false">
+  </a-sky>
+
+  <!-- 🔴 PIN DE UBICACIÓN -->
+  <a-entity id="pinPino"
+            class="clickable"
+            geometry="primitive: cone; radiusBottom: 0.25; radiusTop: 0.05; height: 0.8"
+            material="color: red"
+            position="-35.3 16.5 -5.0"
+            look-at="[camera]">
+  </a-entity>
+
+  <!-- ☁️ NUBE CON TEXTO (OCULTA) -->
+  <a-entity id="nubePino"
+            position="-35.3 18.0 -5.0"
+            visible="false"
+            look-at="[camera]">
+
+    <a-plane width="8"
+             height="4"
+             color="#FFFFFF"
+             material="shader: flat; opacity: 0.9"
+             position="0 0 0">
+    </a-plane>
 
     <a-text
-      value="El pino simboliza el vínculo de ESAN\ncon la Universidad de Stanford,\ncuyo emblema lleva un pino como\nelemento central."
+      value="El pino simboliza el vínculo de ESAN\ncon la Universidad de Stanford,\ncuyo emblema lleva un pino\ncomo elemento central."
       color="#000000"
       align="center"
       width="7"
       position="0 0 0.01">
     </a-text>
 
-  </a-plane>
+  </a-entity>
 
-</a-entity>
+  <!-- TEXTO HISTORIA (NO SE TOCA) -->
+  <a-text
+    id="textoHistoria"
+    value="En esta etapa se consolidan los\nprimeros programas académicos."
+    position="-26.7 8.0 -28.6"
+    color="#7BF502"
+    width="20"
+    align="center"
+    look-at="[camera]">
+  </a-text>
 
+  <!-- CAPA OSCURECER BUTACAS -->
+  <a-entity id="oscurecerButacas"
+            geometry="primitive: sphere; radius: 39"
+            material="shader: flat; color: black; side: back; transparent: true; opacity: 0"
+            visible="false">
+  </a-entity>
 
+  <!-- VIDEO -->
+  <a-video id="pantallaVideo"
+           src="#videoUni"
+           width="30"
+           height="10"
+           position="-27.5 2.5 -11.7"
+           look-at="[camera]"
+           visible="false"
+           material="shader: flat; toneMapped: false">
+  </a-video>
 
+  <!-- BOTÓN -->
+  <a-entity id="contenedorBoton"
+            position="0 1.6 -15">
 
+    <a-circle id="btnAccion"
+              class="clickable"
+              color="#000"
+              opacity="0.7"
+              radius="0.7">
 
+      <a-text
+        value="CONOCE\nNUESTRA\nHISTORIA"
+        align="center"
+        color="#FFFFFF"
+        width="1">
+      </a-text>
+
+    </a-circle>
+  </a-entity>
+
+  <!-- CÁMARA -->
+  <a-entity id="rig">
+    <a-entity camera look-controls position="0 1.6 0">
+      <a-entity cursor="rayOrigin: mouse"
+                raycaster="objects: .clickable, .detectable">
+      </a-entity>
+    </a-entity>
+
+    <a-entity laser-controls="hand: right"
+              raycaster="objects: .clickable, .detectable">
+    </a-entity>
+
+    <a-entity laser-controls="hand: left"
+              raycaster="objects: .clickable, .detectable">
+    </a-entity>
+  </a-entity>
+
+</a-scene>
+
+<script>
+
+const pinPino = document.querySelector('#pinPino');
+const nubePino = document.querySelector('#nubePino');
+
+// 👉 CLICK PIN → MOSTRAR / OCULTAR TEXTO
+pinPino.addEventListener('click', () => {
+  const visible = nubePino.getAttribute('visible');
+  nubePino.setAttribute('visible', !visible);
+});
+
+</script>
+
+</body>
+</html>
 
 
 
