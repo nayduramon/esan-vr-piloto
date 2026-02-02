@@ -16,21 +16,33 @@
   <a-assets>
     <img id="imgLobby" src="gth.jpeg">
     <img id="imgAuditorio" src="butacas.jpg">
-    <video id="videoUni" src="video3.mp4" crossorigin="anonymous" playsinline webkit-playsinline></video>
+    <video id="videoUni" src="video3.mp4" crossorigin="anonymous"
+           playsinline webkit-playsinline></video>
   </a-assets>
 
   <!-- ENTORNOS -->
-  <a-sky id="skyPrincipal" src="#imgLobby" radius="40" rotation="0 -90 0"></a-sky>
-  <a-sky id="skyButacas" src="#imgAuditorio" radius="40" rotation="0 -90 0" visible="false"></a-sky>
+  <a-sky id="skyPrincipal"
+         src="#imgLobby"
+         radius="40"
+         rotation="0 -90 0"
+         class="detectable">
+  </a-sky>
 
-  <!-- CAPA PARA OSCURECER SOLO LAS BUTACAS -->
+  <a-sky id="skyButacas"
+         src="#imgAuditorio"
+         radius="40"
+         rotation="0 -90 0"
+         visible="false">
+  </a-sky>
+
+  <!-- CAPA OSCURECER BUTACAS -->
   <a-entity id="oscurecerButacas"
             geometry="primitive: sphere; radius: 39"
             material="shader: flat; color: black; side: back; transparent: true; opacity: 0"
             visible="false">
   </a-entity>
 
-  <!-- VIDEO (SIEMPRE CLARO) -->
+  <!-- VIDEO -->
   <a-video id="pantallaVideo"
            src="#videoUni"
            width="30"
@@ -38,31 +50,39 @@
            position="-27.5 2.5 -11.7"
            look-at="[camera]"
            visible="false"
-           material="shader: flat"
-           animation__entrar="property: scale; from: 0 0 0; to: 1 1 1; dur: 3000; easing: easeOutQuad; startEvents: videoEntra">
+           material="shader: flat; toneMapped: false"
+           animation__entrar="property: scale; from: 0 0 0; to: 1 1 1;
+                              dur: 3000; easing: easeOutQuad; startEvents: videoEntra">
   </a-video>
+
+  <!-- TEXTO DETECTADO (PRUEBA) -->
+  <a-text id="textoDetectado"
+          value="Texto aquí"
+          color="#FFD700"
+          width="6"
+          align="center"
+          visible="false"
+          look-at="[camera]">
+  </a-text>
 
   <!-- BOTÓN -->
   <a-entity id="contenedorBoton"
             position="0 1.6 -15"
-            animation="property: position; to: 0 1.6 -2.5; dur: 8000; easing: easeOutCubic; delay: 500">
+            animation="property: position; to: 0 1.6 -2.5;
+                       dur: 8000; easing: easeOutCubic; delay: 500">
 
     <a-circle id="btnAccion"
               class="clickable"
               color="#000"
               opacity="0.7"
-              radius="0.7"
-              animation__hover="property: scale; to: 1.2 1.2 1; dur: 200; startEvents: mouseenter"
-              animation__leave="property: scale; to: 1 1 1; dur: 200; startEvents: mouseleave">
+              radius="0.7">
 
       <a-text id="textoBoton"
               value="CONOCE NUESTRA\nHISTORIA"
               align="center"
               color="#FFFFFF"
               width="1"
-              wrap-count="20"
-              anchor="center"
-              baseline="center">
+              wrap-count="20">
       </a-text>
 
     </a-circle>
@@ -72,15 +92,20 @@
   <a-entity id="rig">
 
     <a-entity camera look-controls position="0 1.6 0">
+
       <a-entity cursor="fuse: false; rayOrigin: mouse"
-                raycaster="objects: .clickable"></a-entity>
+                raycaster="objects: .clickable, .detectable">
+      </a-entity>
+
     </a-entity>
 
     <a-entity laser-controls="hand: right"
-              raycaster="objects: .clickable; far: 50"></a-entity>
+              raycaster="objects: .clickable, .detectable; far: 50">
+    </a-entity>
 
     <a-entity laser-controls="hand: left"
-              raycaster="objects: .clickable; far: 50"></a-entity>
+              raycaster="objects: .clickable, .detectable; far: 50">
+    </a-entity>
 
   </a-entity>
 
@@ -96,24 +121,24 @@ const textoBoton = document.querySelector('#textoBoton');
 const skyPrincipal = document.querySelector('#skyPrincipal');
 const skyButacas = document.querySelector('#skyButacas');
 const oscurecerButacas = document.querySelector('#oscurecerButacas');
+const textoDetectado = document.querySelector('#textoDetectado');
 
 const animacionEntrada =
   "property: position; to: 0 1.6 -2.5; dur: 8000; easing: easeOutCubic; delay: 500";
 
-// CLICK BOTÓN
+// CLICK BOTÓN (VIDEO)
 btnAccion.addEventListener('click', () => {
 
-  contenedorBtn.setAttribute('visible', 'false');
+  contenedorBtn.setAttribute('visible', false);
 
-  skyPrincipal.setAttribute('visible', 'false');
-  skyButacas.setAttribute('visible', 'true');
+  skyPrincipal.setAttribute('visible', false);
+  skyButacas.setAttribute('visible', true);
 
-  // APAGAR LUCES DEL AUDITORIO
-  oscurecerButacas.setAttribute('visible', 'true');
-  oscurecerButacas.setAttribute('material', 'opacity: 0.85');
+  oscurecerButacas.setAttribute('visible', true);
+  oscurecerButacas.setAttribute('material', 'opacity', 0.85);
 
   video.currentTime = 0;
-  pantalla.setAttribute('visible', 'true');
+  pantalla.setAttribute('visible', true);
 
   setTimeout(() => {
     pantalla.emit('videoEntra');
@@ -124,17 +149,16 @@ btnAccion.addEventListener('click', () => {
 // FIN DEL VIDEO
 video.addEventListener('ended', () => {
 
-  pantalla.setAttribute('visible', 'false');
-  skyButacas.setAttribute('visible', 'false');
-  skyPrincipal.setAttribute('visible', 'true');
+  pantalla.setAttribute('visible', false);
+  skyButacas.setAttribute('visible', false);
+  skyPrincipal.setAttribute('visible', true);
 
-  // PRENDER LUCES
-  oscurecerButacas.setAttribute('material', 'opacity: 0');
-  oscurecerButacas.setAttribute('visible', 'false');
+  oscurecerButacas.setAttribute('material', 'opacity', 0);
+  oscurecerButacas.setAttribute('visible', false);
 
   textoBoton.setAttribute('value', 'VUELVE A VER\nNUESTRA\nHISTORIA');
 
-  contenedorBtn.setAttribute('visible', 'true');
+  contenedorBtn.setAttribute('visible', true);
   contenedorBtn.setAttribute('position', '0 1.6 -15');
   contenedorBtn.removeAttribute('animation');
 
@@ -143,10 +167,27 @@ video.addEventListener('ended', () => {
   }, 50);
 });
 
+// 🔥 DETECTOR DE COORDENADAS EN gth.jpeg
+skyPrincipal.addEventListener('click', (evt) => {
+
+  const p = evt.detail.intersection.point;
+
+  console.log('📍 Coordenadas detectadas');
+  console.log(`x: ${p.x.toFixed(2)} y: ${p.y.toFixed(2)} z: ${p.z.toFixed(2)}`);
+
+  textoDetectado.setAttribute('position', p);
+  textoDetectado.setAttribute(
+    'value',
+    `X:${p.x.toFixed(1)} Y:${p.y.toFixed(1)} Z:${p.z.toFixed(1)}`
+  );
+  textoDetectado.setAttribute('visible', true);
+});
+
 </script>
 
 </body>
 </html>
+
 
 
 
