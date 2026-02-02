@@ -44,28 +44,38 @@
     </a-cone>
   </a-entity>
 
-  <!-- ☁️ NUBE DE TEXTO (CLARA Y NÍTIDA) -->
-  <a-entity id="nubePino"
-            position="-35.3 21.0 -5.0"
-            visible="false"
-            look-at="[camera]">
+  <!-- ☁️ NUBE DE TEXTO (CORREGIDA – SE VE NÍTIDA Y SIEMPRE) -->
+<a-entity id="nubePino"
+          position="-35.3 21.0 -5.0"
+          scale="1 1 1"
+          visible="false"
+          look-at="[camera]"
+          render-order="10">
 
-    <a-plane width="10"
-             height="5"
-             material="shader: flat; color: #FFFFFF; transparent: true; opacity: 0.95">
-    </a-plane>
+  <!-- FONDO -->
+  <a-plane width="10"
+           height="5"
+           position="0 0 -0.05"
+           material="shader: flat;
+                     color: #FFFFFF;
+                     side: double;
+                     transparent: true;
+                     opacity: 0.95">
+  </a-plane>
 
-    <a-text
-      value="El pino simboliza el vínculo de ESAN\ncon la Universidad de Stanford,\ncuyo emblema lleva un pino\ncomo elemento central."
-      color="#000000"
-      width="9"
-      wrap-count="50"
-      align="center"
-      position="0 0 0.02"
-      font="https://cdn.aframe.io/fonts/mozillavr.fnt">
-    </a-text>
+  <!-- TEXTO -->
+  <a-text
+    value="El pino simboliza el vínculo de ESAN\ncon la Universidad de Stanford,\ncuyo emblema lleva un pino\ncomo elemento central."
+    color="#000000"
+    width="9"
+    wrap-count="55"
+    align="center"
+    position="0 0 0"
+    material="shader: flat; side: double"
+    font="https://cdn.aframe.io/fonts/mozillavr.fnt">
+  </a-text>
 
-  </a-entity>
+</a-entity>
 
   <!-- CAPA PARA OSCURECER SOLO LAS BUTACAS -->
   <a-entity id="oscurecerButacas"
@@ -205,6 +215,7 @@ video.addEventListener('ended', () => {
 
 </body>
 </html>
+
 
 
 
